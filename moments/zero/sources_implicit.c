@@ -936,6 +936,9 @@ implicit_source_coupling_update(
   if (mom_em->has_nT_sources) {
     explicit_nT_source_update(mom_em, dt, fluid_s, nT_sources_s);
   }
+  if (mom_em->has_ionization_sources) {
+    explicit_ionization_source_update(mom_em, dt, fluid_s, nT_sources_s);
+  }
   if (mom_em->has_frictional_sources) {
     if (mom_em->use_explicit_friction) {
       explicit_frictional_source_update(mom_em, t_curr, dt, fluid_s);

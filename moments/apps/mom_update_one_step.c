@@ -35,7 +35,6 @@ moment_update_one_step(gkyl_moment_app *app, double dt0)
         if (app->has_field) {
           gkyl_array_copy(app->field.fdup, app->field.f[0]);
         }
-
         break;
 
       case FIRST_COUPLING_UPDATE:
@@ -59,7 +58,6 @@ moment_update_one_step(gkyl_moment_app *app, double dt0)
           mhd_src_update(app, &app->mhd_source, 0, tcurr, dt / 2);
           app->stat.sources_tm += gkyl_time_diff_now_sec(src1_tm);
         }
-
         break;
 
       case FIELD_UPDATE:
@@ -78,7 +76,6 @@ moment_update_one_step(gkyl_moment_app *app, double dt0)
           dt_suggested = fmin(dt_suggested, s.dt_suggested);
           app->stat.field_tm += gkyl_time_diff_now_sec(fl_tm);
         }
-
         break;
 
       case SPECIES_UPDATE:
@@ -97,7 +94,6 @@ moment_update_one_step(gkyl_moment_app *app, double dt0)
           dt_suggested = fmin(dt_suggested, s.dt_suggested);
         }
         app->stat.species_tm += gkyl_time_diff_now_sec(sp_tm);
-
         break;
 
       case SECOND_COUPLING_UPDATE:
@@ -113,7 +109,6 @@ moment_update_one_step(gkyl_moment_app *app, double dt0)
           mhd_src_update(app, &app->mhd_source, 1, tcurr, dt / 2);
           app->stat.sources_tm += gkyl_time_diff_now_sec(src2_tm);
         }
-
         break;
 
       case POST_UPDATE:
@@ -132,7 +127,6 @@ moment_update_one_step(gkyl_moment_app *app, double dt0)
         if (app->has_field) {
           gkyl_array_copy(app->field.f[0], app->field.f[ndim]);
         }
-
         break;
 
       case UPDATE_REDO:
@@ -145,7 +139,6 @@ moment_update_one_step(gkyl_moment_app *app, double dt0)
         if (app->has_field) {
           gkyl_array_copy(app->field.f[0], app->field.fdup);
         }
-
         break;
 
       case UPDATE_DONE: // unreachable code! (suppresses warning)

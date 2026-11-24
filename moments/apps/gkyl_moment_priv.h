@@ -51,7 +51,8 @@ enum {
   GKYL_MOM_APP_NUM_APPLIED_CURRENT = 3,
   GKYL_MOM_APP_NUM_EXT_EM = 6,
   GKYL_MOM_APP_NUM_APPLIED_ACCELERATION = 3,
-  GKYL_MOM_APP_NUM_NT_SOURCE = 2
+  GKYL_MOM_APP_NUM_NT_SOURCE = 2,
+  GKYL_MOM_APP_NUM_IONIZATION_SOURCE = 3
 };
 
 // Species data
@@ -158,6 +159,12 @@ struct moment_species {
   gkyl_fv_proj *proj_nT_source;
   bool nT_source_set_only_once; // set by user
   bool nT_source_is_set; // to be set at run time
+
+  struct gkyl_array *ionization_source; // array for ionization source
+  // projection func for ionization source
+  gkyl_fv_proj *proj_ionization_source;
+  bool ionization_source_set_only_once; // set by user
+  bool ionization_source_is_set; // to be set at run time
 
   struct gkyl_array *bc_buffer; // buffer for periodic BCs
 
@@ -289,6 +296,8 @@ struct moment_coupling {
   struct gkyl_array *pr_rhs[GKYL_MAX_SPECIES];
   // array for storing RHS of number density and temperature source terms
   struct gkyl_array *nT_sources[GKYL_MAX_SPECIES];
+  // array for storing RHS of ionization source term
+  struct gkyl_array *ionization_sources[GKYL_MAX_SPECIES];
 
   gkyl_moment_em_coupling *slvr; // source solver function
 };

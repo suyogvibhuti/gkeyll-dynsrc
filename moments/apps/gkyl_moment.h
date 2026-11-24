@@ -110,6 +110,11 @@ struct gkyl_moment_species {
   void (*nT_source_func)(double t, const double *xn, double *fout, void *ctx);
   bool nT_source_set_only_once;
 
+  void *ionization_source_ctx; // context for ionization source
+  // pointer to user-defined ionization source function
+  void (*ionization_source_func)(double t, const double *xn, double *fout, void *ctx);
+  bool ionization_source_set_only_once;
+
   // boundary conditions
   enum gkyl_species_bc_type bcx[2], bcy[2], bcz[2];
   // for function BCs these should be set
@@ -205,6 +210,7 @@ struct gkyl_moment {
   double nu_base[GKYL_MAX_SPECIES][GKYL_MAX_SPECIES];
 
   bool has_nT_sources;
+  bool has_ionization_sources;
 
   bool has_braginskii; // has Braginskii transport
   double coll_fac; // multiplicative collisionality factor for Braginskii

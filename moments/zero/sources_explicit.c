@@ -4,6 +4,7 @@
 #include <gkyl_sources_explicit_priv.h>
 #include <gkyl_moment_em_coupling_priv.h>
 #include <gkyl_mat.h>
+#include <stdio.h> // remove later
 
 void
 explicit_nT_source_update_euler(
@@ -45,6 +46,53 @@ explicit_nT_source_update(
     double mass = mom_em->param[i].mass;
 
     explicit_nT_source_update_euler(mass, dt, f, f, nT_sources);
+  }
+}
+
+void
+explicit_ionization_source_update_euler(
+  const double mass, const double dt, double *fluid_old, double *fluid_new, const double *nT_sources
+)
+{
+  double rho_old = fluid_old[0];
+  double n_old = rho_old / mass;
+
+  double u = fluid_old[1] / rho_old;
+  double v = fluid_old[2] / rho_old;
+  double w = fluid_old[3] / rho_old;
+  double v_sq = (u * u) + (v * v) + (w * w);
+  double TT_old = (fluid_old[4] - (0.5 * rho_old * v_sq)) / n_old;
+
+  double multiplier = nT_sources[2];
+  // printf("multiplier: %7.7f\n", multiplier);
+  double n_new = n_old + (dt * nT_sources[0] * multiplier);
+  // double TT_new = TT_old + (nT_sources[1] - TT_old) * multiplier; // Arbitrarily set temperature based on isothermic plasma assumption
+  double TT_new = nT_sources[1];
+
+  double rho_new = n_new * mass;
+  fluid_new[0] = rho_new;
+  fluid_new[1] = rho_old * u;
+  fluid_new[2] = rho_old * v;
+  fluid_new[3] = rho_old * w;
+  fluid_new[4] = (n_new * TT_new) + (0.5 * rho_old * rho_old * v_sq / rho_new);
+  // printf("fluid0: %7.7f, fluid1: %7.7f, fluid2: %7.7f, fluid3: %7.7f, fluid4: %7.7f\n", fluid_new[0], fluid_new[1], fluid_new[2], fluid_new[3], fluid_new[4]);
+}
+
+void
+explicit_ionization_source_update(
+  const gkyl_moment_em_coupling *mom_em, const double dt, double *fluid_s[GKYL_MAX_SPECIES],
+  const double *nT_sources_s[GKYL_MAX_SPECIES]
+)
+{
+  int nfluids = mom_em->nfluids;
+
+  for (int i = 0; i < nfluids; i++) {
+    double *f = fluid_s[i];
+    const double *nT_sources = nT_sources_s[i];
+
+    double mass = mom_em->param[i].mass;
+
+    explicit_ionization_source_update_euler(mass, dt, f, f, nT_sources);
   }
 }
 

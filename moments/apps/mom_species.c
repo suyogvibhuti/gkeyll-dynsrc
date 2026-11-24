@@ -398,7 +398,24 @@ moment_species_init(
 
     sp->proj_nT_source =
       gkyl_fv_proj_new(&app->grid, 2, GKYL_MOM_APP_NUM_NT_SOURCE, mom_sp->nT_source_func, ctx);
+
     sp->nT_source_set_only_once = mom_sp->nT_source_set_only_once;
+  }
+
+  sp->ionization_source = mkarr(false, 3, app->local_ext.volume);
+  sp->ionization_source_is_set = false;
+  sp->proj_ionization_source = 0;
+  if (mom_sp->ionization_source_func) {
+    sp->update_sources = true;
+    void *ctx = sp->ctx;
+    if (mom_sp->ionization_source_ctx) {
+      ctx = mom_sp->ionization_source_ctx;
+    }
+
+    sp->proj_ionization_source =
+    gkyl_fv_proj_new(&app->grid, 2, GKYL_MOM_APP_NUM_IONIZATION_SOURCE, mom_sp->ionization_source_func, ctx);
+
+    sp->ionization_source_set_only_once = mom_sp->ionization_source_set_only_once;
   }
 
   // allocate buffer for applying BCs (used for periodic BCs)
@@ -593,6 +610,11 @@ moment_species_release(const struct moment_species *sp)
   gkyl_array_release(sp->nT_source);
   if (sp->proj_nT_source) {
     gkyl_fv_proj_release(sp->proj_nT_source);
+  }
+
+  gkyl_array_release(sp->ionization_source);
+  if (sp->proj_ionization_source) {
+    gkyl_fv_proj_release(sp->proj_ionization_source);
   }
 
   gkyl_array_release(sp->embed_mask);

@@ -193,6 +193,10 @@ singleb_app_new(
     species_inp.nT_source_func = sp_pb->nT_source_func;
     species_inp.nT_source_set_only_once = sp_pb->nT_source_set_only_once;
 
+    species_inp.ionization_source_ctx = sp_pb->ionization_source_ctx;
+    species_inp.ionization_source_func = sp_pb->ionization_source_func;
+    species_inp.ionization_source_set_only_once = sp_pb->ionization_source_set_only_once;
+
     // by default, skip BCs altogether
     for (int e = 0; e < 2; ++e) {
       species_inp.bcx[e] = GKYL_SPECIES_SKIP;

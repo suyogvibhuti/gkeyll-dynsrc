@@ -22,6 +22,11 @@ struct gkyl_moment_multib_species_pb {
   // pointer to user-defined number density and temperature sources
   void (*nT_source_func)(double t, const double *xn, double *fout, void *ctx);
   bool nT_source_set_only_once;
+
+  void *ionization_source_ctx; // context for ionization source
+  // pointer to user-defined ionization source
+  void (*ionization_source_func)(double t, const double *xn, double *fout, void *ctx);
+  bool ionization_source_set_only_once;
 };
 
 // Species input

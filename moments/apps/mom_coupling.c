@@ -43,6 +43,13 @@ moment_coupling_init(const struct gkyl_moment_app *app, struct moment_coupling *
     }
   }
 
+  src_inp.has_ionization_sources = false;
+  for (int i = 0; i < app->num_species; ++i) {
+    if (app->species[i].proj_ionization_source) {
+      src_inp.has_ionization_sources = true;
+    }
+  }
+
   // check for relativistic-species
   bool use_rel = 0;
   for (int n = 0; n < app->num_species; ++n) {
@@ -309,7 +316,7 @@ moment_coupling_update(
   struct gkyl_array *fluids[GKYL_MAX_SPECIES];
   const struct gkyl_array *app_accels[GKYL_MAX_SPECIES];
   const struct gkyl_array *pr_rhs_const[GKYL_MAX_SPECIES];
-  const struct gkyl_array *nT_sources[GKYL_MAX_SPECIES];
+  const struct gkyl_array *nT_sources[GKYL_MAX_SPECIES]; // Used for both nT and ionization sources
 
   double dt_suggested = DBL_MAX;
   struct gkyl_ten_moment_grad_closure_status stat;
@@ -388,8 +395,21 @@ moment_coupling_update(
         app->species[i].proj_nT_source, tcurr, &app->local, app->species[i].nT_source
       );
     }
-    nT_sources[i] = app->species[i].nT_source;
-    app->species[i].nT_source_is_set = true;
+    if (app->species[i].proj_nT_source) {
+      nT_sources[i] = app->species[i].nT_source;
+      app->species[i].nT_source_is_set = true;
+    }
+
+    if (app->species[i].proj_ionization_source &&
+      !(app->species[i].ionization_source_set_only_once && app->species[i].ionization_source_is_set)) {
+      gkyl_fv_proj_advance(
+        app->species[i].proj_ionization_source, tcurr, &app->local, app->species[i].ionization_source
+      );
+    }
+    if (app->species[i].proj_ionization_source) {
+      nT_sources[i] = app->species[i].ionization_source;
+      app->species[i].ionization_source_is_set = true;
+    }
   }
 
   if (app->field.use_explicit_em_coupling) {
